@@ -1,0 +1,35 @@
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8B5CF6;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- 背景圆角矩形 -->
+  <rect x="16" y="16" width="224" height="224" rx="56" ry="56" fill="url(#gradient)"/>
+  
+  <!-- 工具图标 -->
+  <g fill="white" stroke="none">
+    <!-- 扳手 -->
+    <path d="M80 120L90 110L120 140L110 150C105 155 95 155 90 150L80 140C75 135 75 125 80 120Z"/>
+    <path d="M110 90L120 80C125 75 135 75 140 80L150 90C155 95 155 105 150 110L140 120L110 90Z"/>
+    
+    <!-- 螺丝刀 -->
+    <rect x="140" y="100" width="80" height="8" rx="4" transform="rotate(45 140 100)"/>
+    <rect x="195" y="75" width="16" height="8" rx="2" transform="rotate(45 195 75)"/>
+    
+    <!-- 齿轮 -->
+    <circle cx="180" cy="180" r="24" fill="none" stroke="white" stroke-width="6"/>
+    <circle cx="180" cy="180" r="8"/>
+    <rect x="174" y="148" width="12" height="16" rx="2"/>
+    <rect x="174" y="196" width="12" height="16" rx="2"/>
+    <rect x="148" y="174" width="16" height="12" rx="2"/>
+    <rect x="196" y="174" width="16" height="12" rx="2"/>
+    
+    <!-- 代码符号 -->
+    <path d="M60 180L40 200L60 220" stroke="white" stroke-width="6" fill="none"/>
+    <path d="M100 180L120 200L100 220" stroke="white" stroke-width="6" fill="none"/>
+    <line x1="70" y1="175" x2="90" y2="225" stroke="white" stroke-width="4"/>
+  </g>
+</svg>
