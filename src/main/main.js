@@ -29,7 +29,20 @@ function createWindow() {
     mainWindow.loadURL('http://localhost:5173');
     mainWindow.webContents.openDevTools();
   } else {
-    mainWindow.loadFile(path.join(__dirname, '../../dist/index.html'));
+    // 在打包后的应用中，dist文件夹被打包到app.asar中
+    let indexPath;
+    if (app.isPackaged) {
+      // 打包后：__dirname 是 app.asar/src/main，需要跳到 app.asar 根目录然后进入 dist
+      indexPath = path.join(__dirname, '../../dist/index.html');
+    } else {
+      // 开发时的路径
+      indexPath = path.join(__dirname, '../../dist/index.html');
+    }
+    
+    console.log('Loading file from:', indexPath);
+    console.log('Current __dirname:', __dirname);
+    console.log('app.isPackaged:', app.isPackaged);
+    mainWindow.loadFile(indexPath);
   }
 
   mainWindow.on('closed', () => {

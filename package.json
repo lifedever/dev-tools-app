@@ -1,6 +1,6 @@
 {
   "name": "dev-tools-mac",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "开发者工具桌面应用",
   "main": "src/main/main.js",
   "scripts": {
@@ -62,8 +62,28 @@
       "src/main/**/*",
       "package.json"
     ],
+
     "mac": {
-      "category": "public.app-category.developer-tools"
+      "category": "public.app-category.developer-tools",
+      "icon": "build/icon.icns",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": ["x64", "arm64"]
+        }
+      ]
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "build/icon.png"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "build/icon_512.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
     }
   }
 }

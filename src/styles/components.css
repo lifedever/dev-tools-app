@@ -63,7 +63,7 @@
 }
 
 .tool-card-header {
-  padding: var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-md);
   border-bottom: 1px solid var(--border-light);
   background: var(--bg-secondary);
 }
@@ -169,6 +169,7 @@
 }
 
 .btn-primary {
+  cursor: pointer;
   background: var(--primary-color);
   border: 1px solid var(--primary-color);
   color: var(--text-inverse);
@@ -188,6 +189,7 @@
 }
 
 .btn-secondary {
+  cursor: pointer;
   background: var(--bg-primary);
   border: 1px solid var(--border-medium);
   color: var(--text-primary);

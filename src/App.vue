@@ -8,12 +8,6 @@
           <tool-outlined class="logo-icon" />
           <span v-if="!collapsed" class="logo-text">DevTools</span>
         </div>
-        <a-button
-          type="text"
-          :icon="collapsed ? h(MenuUnfoldOutlined) : h(MenuFoldOutlined)"
-          @click="toggleSidebar"
-          class="collapse-btn"
-        />
       </div>
 
       <!-- 菜单区域 -->
@@ -62,8 +56,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, h } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { ref, computed, watch, h } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import {
   ToolOutlined,
   MenuFoldOutlined,
@@ -81,80 +75,84 @@ import {
   SafetyOutlined,
   QrcodeOutlined,
   NumberOutlined,
-  LinkOutlined
-} from '@ant-design/icons-vue'
+  LinkOutlined,
+} from "@ant-design/icons-vue";
 
-const route = useRoute()
-const router = useRouter()
+const route = useRoute();
+const router = useRouter();
 
 // 响应式状态
-const collapsed = ref(false)
-const selectedKeys = ref<string[]>([])
+const collapsed = ref(false);
+const selectedKeys = ref<string[]>([]);
 
 // 菜单配置
 const menuGroups = [
   {
-    title: '文本处理',
+    title: "文本处理",
     items: [
-      { key: 'StringProcessor', icon: FileTextOutlined, title: '字符串处理' },
-      { key: 'JsonTools', icon: CodeOutlined, title: 'JSON工具' },
-      { key: 'Prettier', icon: CodeOutlined, title: '代码格式化' },
-      { key: 'TextCounter', icon: NumberOutlined, title: '文本计数' }
-    ]
+      { key: "StringProcessor", icon: FileTextOutlined, title: "字符串处理" },
+      { key: "JsonTools", icon: CodeOutlined, title: "JSON工具" },
+      { key: "Prettier", icon: CodeOutlined, title: "代码格式化" },
+      { key: "TextCounter", icon: NumberOutlined, title: "文本计数" },
+    ],
   },
   {
-    title: '编码工具',
+    title: "编码工具",
     items: [
-      { key: 'Encoding', icon: TranslationOutlined, title: '编码转换' },
-      { key: 'Hash', icon: LockOutlined, title: '哈希计算' },
-      { key: 'UrlCodec', icon: LinkOutlined, title: 'URL编码' }
-    ]
+      { key: "Encoding", icon: TranslationOutlined, title: "编码转换" },
+      { key: "Hash", icon: LockOutlined, title: "哈希计算" },
+      { key: "UrlCodec", icon: LinkOutlined, title: "URL编码" },
+    ],
   },
   {
-    title: '时间工具',
+    title: "时间工具",
     items: [
-      { key: 'Timestamp', icon: FieldTimeOutlined, title: '时间戳转换' },
-      { key: 'DateFormat', icon: CalendarOutlined, title: '日期格式' },
-      { key: 'Crontab', icon: ScheduleOutlined, title: 'Crontab生成' },
-      { key: 'Quartz', icon: ScheduleOutlined, title: 'Quartz生成' }
-    ]
+      { key: "Timestamp", icon: FieldTimeOutlined, title: "时间戳转换" },
+      { key: "DateFormat", icon: CalendarOutlined, title: "日期格式" },
+      { key: "Crontab", icon: ScheduleOutlined, title: "Crontab生成" },
+      { key: "Quartz", icon: ScheduleOutlined, title: "Quartz生成" },
+    ],
   },
   {
-    title: '实用工具',
+    title: "实用工具",
     items: [
-      { key: 'ImageBase64', icon: PictureOutlined, title: '图片转换' },
-      { key: 'PasswordGenerator', icon: SafetyOutlined, title: '密码生成' },
-      { key: 'QRCode', icon: QrcodeOutlined, title: '二维码' },
-      { key: 'Currency', icon: DollarOutlined, title: '金额大写' }
-    ]
-  }
-]
+      { key: "ImageBase64", icon: PictureOutlined, title: "图片转换" },
+      { key: "PasswordGenerator", icon: SafetyOutlined, title: "密码生成" },
+      { key: "QRCode", icon: QrcodeOutlined, title: "二维码" },
+      { key: "Currency", icon: DollarOutlined, title: "金额大写" },
+    ],
+  },
+];
 
 // 计算属性
 const currentRouteTitle = computed(() => {
   for (const group of menuGroups) {
-    const item = group.items.find(item => item.key === route.name)
-    if (item) return item.title
+    const item = group.items.find((item) => item.key === route.name);
+    if (item) return item.title;
   }
-  return '开发者工具'
-})
+  return "开发者工具";
+});
 
 // 切换侧边栏
 const toggleSidebar = () => {
-  collapsed.value = !collapsed.value
-}
+  collapsed.value = !collapsed.value;
+};
 
 // 处理菜单点击
 const handleMenuClick = (key: string) => {
-  router.push({ name: key })
-}
+  router.push({ name: key });
+};
 
 // 监听路由变化
-watch(route, (newRoute) => {
-  if (newRoute.name) {
-    selectedKeys.value = [newRoute.name as string]
-  }
-}, { immediate: true })
+watch(
+  route,
+  (newRoute) => {
+    if (newRoute.name) {
+      selectedKeys.value = [newRoute.name as string];
+    }
+  },
+  { immediate: true }
+);
 </script>
 
 <style scoped>
@@ -168,7 +166,11 @@ watch(route, (newRoute) => {
 /* 侧边栏样式 */
 .sidebar {
   width: 280px;
-  background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+  background: linear-gradient(
+    180deg,
+    var(--bg-primary) 0%,
+    var(--bg-secondary) 100%
+  );
   border-right: 1px solid var(--border-light);
   display: flex;
   flex-direction: column;
@@ -181,24 +183,28 @@ watch(route, (newRoute) => {
 }
 
 .logo-section {
-  height: 72px;
-  padding: var(--spacing-md) var(--spacing-lg);
+  height: 56px;
   border-bottom: 1px solid var(--border-light);
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+  justify-content: center;
+  background: linear-gradient(
+    135deg,
+    var(--primary-color),
+    var(--primary-dark)
+  );
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .logo {
-  display: flex;
+  width: 130px;
+  display: inline-flex;
   align-items: center;
   gap: var(--spacing-md);
 }
 
 .logo-icon {
-  font-size: 28px;
+  font-size: 24px;
   color: var(--text-inverse);
 }
 
@@ -267,14 +273,18 @@ watch(route, (newRoute) => {
 }
 
 .menu-item.active {
-  background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+  background: linear-gradient(
+    135deg,
+    var(--primary-color),
+    var(--primary-dark)
+  );
   color: var(--text-inverse);
   font-weight: 600;
   box-shadow: var(--shadow-md);
 }
 
 .menu-item.active::before {
-  content: '';
+  content: "";
   position: absolute;
   left: -8px;
   top: 50%;
@@ -338,7 +348,11 @@ watch(route, (newRoute) => {
   font-size: var(--text-xl);
   font-weight: 700;
   color: var(--text-primary);
-  background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+  background: linear-gradient(
+    135deg,
+    var(--primary-color),
+    var(--primary-dark)
+  );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -411,7 +425,7 @@ watch(route, (newRoute) => {
     z-index: 1000;
     height: 100vh;
   }
-  
+
   .main-content {
     margin-left: 0;
   }
