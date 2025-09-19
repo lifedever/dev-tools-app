@@ -6,20 +6,46 @@ const forge = require('node-forge');
 let mainWindow;
 
 function createWindow() {
-  mainWindow = new BrowserWindow({
+  const windowOptions = {
     width: 1200,
     height: 800,
     minWidth: 800,
     minHeight: 600,
-    titleBarStyle: 'hiddenInset',
-    trafficLightPosition: { x: 16, y: 16 },
+    title: '开发者工具',
+    show: false, // 窗口创建时先隐藏，ready-to-show时再显示
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
       enableRemoteModule: false,
       preload: path.join(__dirname, 'preload.js')
-    },
-    icon: path.join(__dirname, '../assets/icon.png')
+    }
+  };
+
+  // 根据平台设置不同的窗口样式
+  if (process.platform === 'darwin') {
+    // macOS
+    windowOptions.titleBarStyle = 'default';
+    windowOptions.trafficLightPosition = { x: 20, y: 20 };
+  } else if (process.platform === 'win32') {
+    // Windows
+    windowOptions.frame = true;
+    windowOptions.titleBarStyle = 'default';
+  } else {
+    // Linux 和其他平台
+    windowOptions.frame = true;
+  }
+
+  // 设置图标路径
+  const iconPath = path.join(__dirname, '../assets/icon.png');
+  if (require('fs').existsSync(iconPath)) {
+    windowOptions.icon = iconPath;
+  }
+
+  mainWindow = new BrowserWindow(windowOptions);
+
+  // 窗口准备好后再显示，避免闪烁
+  mainWindow.once('ready-to-show', () => {
+    mainWindow.show();
   });
 
   // 开发环境加载Vite服务器，生产环境加载构建后的文件

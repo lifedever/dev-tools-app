@@ -1,6 +1,6 @@
 {
   "name": "dev-tools-mac",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "开发者工具桌面应用",
   "main": "src/main/main.js",
   "scripts": {
