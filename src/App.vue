@@ -76,6 +76,7 @@ import {
   QrcodeOutlined,
   NumberOutlined,
   LinkOutlined,
+  DatabaseOutlined,
 } from "@ant-design/icons-vue";
 
 const route = useRoute();
@@ -93,6 +94,7 @@ const menuGroups = [
       { key: "StringProcessor", icon: FileTextOutlined, title: "字符串处理" },
       { key: "JsonTools", icon: CodeOutlined, title: "JSON工具" },
       { key: "Prettier", icon: CodeOutlined, title: "代码格式化" },
+      { key: "SqlFormatter", icon: DatabaseOutlined, title: "SQL格式化" },
       { key: "TextCounter", icon: NumberOutlined, title: "文本计数" },
     ],
   },
