@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, clipboard } = require('electron');
+const { app, BrowserWindow, ipcMain, clipboard, shell } = require('electron');
 const path = require('path');
 const crypto = require('crypto');
 const forge = require('node-forge');
@@ -11,7 +11,7 @@ function createWindow() {
     height: 800,
     minWidth: 800,
     minHeight: 600,
-    title: '开发者工具',
+    title: 'DevTools',
     show: false, // 窗口创建时先隐藏，ready-to-show时再显示
     webPreferences: {
       nodeIntegration: false,
@@ -394,5 +394,22 @@ ipcMain.handle('clipboard-write-text', async (event, text) => {
     return true;
   } catch (error) {
     throw new Error(`剪贴板写入失败: ${error.message}`);
+  }
+});
+
+// IPC 处理程序：打开外部链接
+ipcMain.handle('open-external-link', async (event, url) => {
+  try {
+    // 验证URL格式
+    const urlPattern = /^https?:\/\/.+/i;
+    if (!urlPattern.test(url)) {
+      throw new Error('无效的URL格式，只支持http和https链接');
+    }
+    
+    // 使用shell.openExternal在默认浏览器中打开链接
+    await shell.openExternal(url);
+    return true;
+  } catch (error) {
+    throw new Error(`打开链接失败: ${error.message}`);
   }
 });

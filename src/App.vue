@@ -15,13 +15,8 @@
         <div class="menu-group" v-for="group in menuGroups" :key="group.title">
           <div class="group-title" v-if="!collapsed">{{ group.title }}</div>
           <div class="menu-items">
-            <div
-              v-for="item in group.items"
-              :key="item.key"
-              class="menu-item"
-              :class="{ active: selectedKeys.includes(item.key) }"
-              @click="handleMenuClick(item.key)"
-            >
+            <div v-for="item in group.items" :key="item.key" class="menu-item"
+              :class="{ active: selectedKeys.includes(item.key) }" @click="handleMenuClick(item.key)">
               <component :is="item.icon" class="menu-icon" />
               <span v-if="!collapsed" class="menu-text">{{ item.title }}</span>
             </div>
@@ -49,7 +44,8 @@
 
       <!-- 底部信息 -->
       <div class="footer">
-        <span>DevTools ©2024 Created with ❤️</span>
+        DevTools ©{{ new Date().getFullYear() }} Created with &nbsp;
+        <a href="#" style="color: var(--primary-color); font-weight: bold;" @click.prevent="openExternalLink('https://github.com/lifedever')">Lifedever ❤️</a>
       </div>
     </div>
   </div>
@@ -59,6 +55,7 @@
 import { ref, computed, watch, h } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import packageInfo from "../package.json";
+import { openExternalLink } from "@/utils/external-link";
 import {
   ToolOutlined,
   MenuFoldOutlined,
@@ -131,7 +128,7 @@ const currentRouteTitle = computed(() => {
     const item = group.items.find((item) => item.key === route.name);
     if (item) return item.title;
   }
-  return "开发者工具";
+  return "DevTools";
 });
 
 // 切换侧边栏
@@ -143,6 +140,7 @@ const toggleSidebar = () => {
 const handleMenuClick = (key: string) => {
   router.push({ name: key });
 };
+
 
 // 监听路由变化
 watch(
@@ -167,11 +165,9 @@ watch(
 /* 侧边栏样式 */
 .sidebar {
   width: 280px;
-  background: linear-gradient(
-    180deg,
-    var(--bg-primary) 0%,
-    var(--bg-secondary) 100%
-  );
+  background: linear-gradient(180deg,
+      var(--bg-primary) 0%,
+      var(--bg-secondary) 100%);
   border-right: 1px solid var(--border-light);
   display: flex;
   flex-direction: column;
@@ -189,11 +185,9 @@ watch(
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(
-    135deg,
-    var(--primary-color),
-    var(--primary-dark)
-  );
+  background: linear-gradient(135deg,
+      var(--primary-color),
+      var(--primary-dark));
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -274,11 +268,9 @@ watch(
 }
 
 .menu-item.active {
-  background: linear-gradient(
-    135deg,
-    var(--primary-color),
-    var(--primary-dark)
-  );
+  background: linear-gradient(135deg,
+      var(--primary-color),
+      var(--primary-dark));
   color: var(--text-inverse);
   font-weight: 600;
   box-shadow: var(--shadow-md);
@@ -323,7 +315,7 @@ watch(
   transition: margin-left var(--transition-normal);
 }
 
-.sidebar.collapsed + .main-content {
+.sidebar.collapsed+.main-content {
   margin-left: 64px;
 }
 
@@ -349,11 +341,9 @@ watch(
   font-size: var(--text-xl);
   font-weight: 700;
   color: var(--text-primary);
-  background: linear-gradient(
-    135deg,
-    var(--primary-color),
-    var(--primary-dark)
-  );
+  background: linear-gradient(135deg,
+      var(--primary-color),
+      var(--primary-dark));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

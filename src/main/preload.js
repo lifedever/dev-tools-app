@@ -18,5 +18,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   clipboard: {
     readText: () => ipcRenderer.invoke('clipboard-read-text'),
     writeText: (text) => ipcRenderer.invoke('clipboard-write-text', text)
-  }
+  },
+  
+  // 打开外部链接
+  openExternalLink: (url) => ipcRenderer.invoke('open-external-link', url)
 });
