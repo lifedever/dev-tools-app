@@ -27,6 +27,7 @@
                   <option value="html">HTML</option>
                   <option value="vue">Vue</option>
                   <option value="json">JSON</option>
+                  <option value="sql">SQL</option>
                   <option value="markdown">Markdown</option>
                   <option value="yaml">YAML</option>
                 </select>
@@ -93,6 +94,7 @@
             <button class="btn-secondary" @click="formatAsCSS" :disabled="!inputCode">CSS</button>
             <button class="btn-secondary" @click="formatAsHTML" :disabled="!inputCode">HTML</button>
             <button class="btn-secondary" @click="formatAsJSON" :disabled="!inputCode">JSON</button>
+            <button class="btn-secondary" @click="formatAsSQL" :disabled="!inputCode">SQL</button>
           </div>
         </div>
       </div>
@@ -169,6 +171,10 @@ const formatCode = async () => {
         formatted = formatHTML(inputCode.value)
         break
         
+      case 'sql':
+        formatted = formatSQL(inputCode.value)
+        break
+        
       default:
         formatted = formatJavaScript(inputCode.value)
         break
@@ -242,6 +248,154 @@ const formatHTML = (code: string): string => {
   }).join('\n')
 }
 
+// SQL关键字列表
+const SQL_KEYWORDS = [
+  'SELECT', 'FROM', 'WHERE', 'JOIN', 'LEFT', 'RIGHT', 'INNER', 'OUTER', 'ON', 
+  'GROUP', 'BY', 'HAVING', 'ORDER', 'ASC', 'DESC', 'INSERT', 'INTO', 'VALUES',
+  'UPDATE', 'SET', 'DELETE', 'CREATE', 'TABLE', 'ALTER', 'DROP', 'INDEX',
+  'PRIMARY', 'KEY', 'FOREIGN', 'REFERENCES', 'CONSTRAINT', 'NOT', 'NULL',
+  'DEFAULT', 'AUTO_INCREMENT', 'UNIQUE', 'CHECK', 'AND', 'OR', 'IN', 'EXISTS',
+  'BETWEEN', 'LIKE', 'IS', 'AS', 'DISTINCT', 'ALL', 'ANY', 'SOME', 'UNION',
+  'INTERSECT', 'EXCEPT', 'CASE', 'WHEN', 'THEN', 'ELSE', 'END', 'IF', 'ELSE',
+  'ELSEIF', 'WHILE', 'FOR', 'LOOP', 'REPEAT', 'UNTIL', 'DECLARE', 'CURSOR',
+  'OPEN', 'FETCH', 'CLOSE', 'DEALLOCATE', 'BEGIN', 'COMMIT', 'ROLLBACK',
+  'TRANSACTION', 'SAVEPOINT', 'RELEASE', 'LOCK', 'UNLOCK', 'GRANT', 'REVOKE',
+  'WITH', 'RECURSIVE', 'CTE', 'OVER', 'PARTITION', 'ROW_NUMBER', 'RANK',
+  'DENSE_RANK', 'LAG', 'LEAD', 'FIRST_VALUE', 'LAST_VALUE', 'COUNT', 'SUM',
+  'AVG', 'MIN', 'MAX', 'STDDEV', 'VARIANCE', 'COALESCE', 'NULLIF', 'CAST',
+  'CONVERT', 'SUBSTRING', 'LENGTH', 'TRIM', 'UPPER', 'LOWER', 'CONCAT'
+]
+
+// SQL格式化
+const formatSQL = (code: string): string => {
+  // 移除多余的空白字符并清理
+  let sql = code.replace(/\s+/g, ' ').trim()
+  
+  // 处理关键字大小写（统一转为大写）
+  SQL_KEYWORDS.forEach(keyword => {
+    const regex = new RegExp(`\\b${keyword}\\b`, 'gi')
+    sql = sql.replace(regex, keyword.toUpperCase())
+  })
+  
+  // 在主要关键字前添加换行
+  const mainKeywords = [
+    'SELECT', 'FROM', 'WHERE', 'GROUP BY', 'HAVING', 'ORDER BY',
+    'INNER JOIN', 'LEFT JOIN', 'RIGHT JOIN', 'FULL JOIN', 'JOIN',
+    'UNION', 'UNION ALL', 'INSERT', 'UPDATE', 'DELETE', 'CREATE', 'ALTER', 'DROP'
+  ]
+  
+  // 按长度排序，确保较长的关键字先被替换
+  mainKeywords.sort((a, b) => b.length - a.length)
+  
+  mainKeywords.forEach(keyword => {
+    const regex = new RegExp(`\\b${keyword}\\b`, 'gi')
+    sql = sql.replace(regex, `\n${keyword}`)
+  })
+  
+  // 处理逗号后的换行
+  sql = sql.replace(/,\s*/g, ',\n  ')
+  
+  // 处理 AND, OR 逻辑运算符
+  sql = sql.replace(/\s+(AND|OR)\s+/gi, '\n  AND ')
+  sql = sql.replace(/\s+(AND|OR)\s+/gi, (match, operator) => `\n  ${operator.toUpperCase()} `)
+  
+  // 分割成行并处理缩进
+  const lines = sql.split('\n')
+  let indentLevel = 0
+  const formattedLines: string[] = []
+  
+  for (let line of lines) {
+    line = line.trim()
+    if (!line) continue
+    
+    // 检查是否需要减少缩进（子查询结束）
+    if (line.includes(')')) {
+      indentLevel = Math.max(0, indentLevel - (line.match(/\)/g) || []).length)
+    }
+    
+    // 添加缩进
+    let indent = ''
+    if (line.startsWith('SELECT') || line.startsWith('INSERT') || line.startsWith('UPDATE') || 
+        line.startsWith('DELETE') || line.startsWith('CREATE') || line.startsWith('ALTER') || line.startsWith('DROP')) {
+      // 主查询不缩进
+      indent = ''
+    } else if (line.startsWith('FROM') || line.startsWith('WHERE') || line.startsWith('GROUP BY') || 
+               line.startsWith('HAVING') || line.startsWith('ORDER BY') || line.includes('JOIN')) {
+      // 主要子句缩进一级
+      indent = '  '
+    } else if (line.startsWith('AND') || line.startsWith('OR')) {
+      // 逻辑运算符额外缩进
+      indent = '    '
+    } else {
+      // 其他内容根据当前缩进级别
+      indent = '  '.repeat(indentLevel + 1)
+    }
+    
+    formattedLines.push(indent + line)
+    
+    // 检查是否需要增加缩进（子查询开始）
+    if (line.includes('(')) {
+      indentLevel += (line.match(/\(/g) || []).length
+    }
+  }
+  
+  // 清理多余的空行并返回
+  return formattedLines
+    .filter(line => line.trim())
+    .join('\n')
+    .replace(/\n\s*\n/g, '\n')
+    .trim()
+}
+
+// 简单的SQL分词器
+const tokenizeSQL = (sql: string): string[] => {
+  const tokens: string[] = []
+  let current = ''
+  let inString = false
+  let stringChar = ''
+  
+  for (let i = 0; i < sql.length; i++) {
+    const char = sql[i]
+    
+    if (inString) {
+      current += char
+      if (char === stringChar && sql[i - 1] !== '\\') {
+        inString = false
+        stringChar = ''
+      }
+    } else {
+      if (char === '"' || char === "'") {
+        if (current.trim()) {
+          tokens.push(current.trim())
+          current = ''
+        }
+        current += char
+        inString = true
+        stringChar = char
+      } else if ([' ', '\t', '\n', '\r'].includes(char)) {
+        if (current.trim()) {
+          tokens.push(current.trim())
+          current = ''
+        }
+      } else if (['(', ')', ',', ';'].includes(char)) {
+        if (current.trim()) {
+          tokens.push(current.trim())
+          current = ''
+        }
+        tokens.push(char)
+      } else {
+        current += char
+      }
+    }
+  }
+  
+  if (current.trim()) {
+    tokens.push(current.trim())
+  }
+  
+  return tokens
+}
+
 // 快速格式化选项
 const formatAsJS = () => {
   selectedParser.value = 'babel'
@@ -260,6 +414,11 @@ const formatAsHTML = () => {
 
 const formatAsJSON = () => {
   selectedParser.value = 'json'
+  formatCode()
+}
+
+const formatAsSQL = () => {
+  selectedParser.value = 'sql'
   formatCode()
 }
 </script>

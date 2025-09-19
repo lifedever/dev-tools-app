@@ -38,7 +38,7 @@
           <h1 class="page-title">{{ currentRouteTitle }}</h1>
         </div>
         <div class="header-right">
-          <span class="version">v1.0.0</span>
+          <span class="version">v{{ packageInfo.version }}</span>
         </div>
       </div>
 
@@ -58,6 +58,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, h } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import packageInfo from "../package.json";
 import {
   ToolOutlined,
   MenuFoldOutlined,
@@ -76,7 +77,6 @@ import {
   QrcodeOutlined,
   NumberOutlined,
   LinkOutlined,
-  DatabaseOutlined,
 } from "@ant-design/icons-vue";
 
 const route = useRoute();
@@ -94,7 +94,6 @@ const menuGroups = [
       { key: "StringProcessor", icon: FileTextOutlined, title: "字符串处理" },
       { key: "JsonTools", icon: CodeOutlined, title: "JSON工具" },
       { key: "Prettier", icon: CodeOutlined, title: "代码格式化" },
-      { key: "SqlFormatter", icon: DatabaseOutlined, title: "SQL格式化" },
       { key: "TextCounter", icon: NumberOutlined, title: "文本计数" },
     ],
   },

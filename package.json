@@ -1,6 +1,6 @@
 {
   "name": "dev-tools-mac",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "开发者工具桌面应用",
   "main": "src/main/main.js",
   "scripts": {
@@ -8,8 +8,9 @@
     "dev": "node scripts/dev.js",
     "dev-main": "nodemon --watch src/main --exec electron .",
     "dev-renderer": "vite",
-    "build": "vite build && electron-builder",
+    "build": "node scripts/build.js",
     "build-only": "vite build",
+    "build-direct": "vite build && electron-builder",
     "preview": "vite preview"
   },
   "keywords": [
@@ -62,14 +63,16 @@
       "src/main/**/*",
       "package.json"
     ],
-
     "mac": {
       "category": "public.app-category.developer-tools",
       "icon": "build/icon.icns",
       "target": [
         {
           "target": "dmg",
-          "arch": ["x64", "arm64"]
+          "arch": [
+            "x64",
+            "arm64"
+          ]
         }
       ]
     },

@@ -96,12 +96,6 @@ const routes: RouteRecordRaw[] = [
     name: 'UrlCodec',
     component: () => import('@/views/UrlCodec.vue'),
     meta: { title: 'URL编解码', icon: 'LinkOutlined' }
-  },
-  {
-    path: '/sql-formatter',
-    name: 'SqlFormatter',
-    component: () => import('@/views/SqlFormatter.vue'),
-    meta: { title: 'SQL格式化', icon: 'DatabaseOutlined' }
   }
 ]
 
