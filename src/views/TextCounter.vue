@@ -20,7 +20,6 @@
                 v-model="text"
                 placeholder="输入文本进行统计..."
                 class="textarea-input"
-                @input="updateStats"
               ></textarea>
             </div>
           </div>
@@ -57,6 +56,10 @@
                 <div class="stat-label">中文字符</div>
                 <div class="stat-value">{{ stats.chinese }}</div>
               </div>
+              <div class="stat-item stat-purple">
+                <div class="stat-label">GPT Tokens</div>
+                <div class="stat-value">{{ stats.tokens }}</div>
+              </div>
             </div>
           </div>
         </div>
@@ -68,11 +71,12 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { message } from 'ant-design-vue'
+import { encode } from 'gpt-tokenizer'
 
 const text = ref('')
 
 const stats = computed(() => {
-  if (!text.value) return { chars: 0, words: 0, lines: 0, paragraphs: 0, bytes: 0, chinese: 0 }
+  if (!text.value) return { chars: 0, words: 0, lines: 0, paragraphs: 0, bytes: 0, chinese: 0, tokens: 0 }
   
   const chars = text.value.length
   const words = text.value.trim().split(/\s+/).filter(w => w).length
@@ -80,8 +84,9 @@ const stats = computed(() => {
   const paragraphs = text.value.split(/\n\s*\n/).filter(p => p.trim()).length
   const bytes = new TextEncoder().encode(text.value).length
   const chinese = (text.value.match(/[\u4e00-\u9fff]/g) || []).length
+  const tokens = encode(text.value).length
   
-  return { chars, words, lines, paragraphs, bytes, chinese }
+  return { chars, words, lines, paragraphs, bytes, chinese, tokens }
 })
 
 const clearText = () => {
@@ -141,6 +146,11 @@ const pasteText = async () => {
 .stat-info {
   background: var(--info-bg);
   border: 1px solid var(--info-light);
+}
+
+.stat-purple {
+  background: linear-gradient(135deg, #f3e8ff, #e9d5ff);
+  border: 1px solid #c084fc;
 }
 
 .stat-label {

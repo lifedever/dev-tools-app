@@ -1,6 +1,6 @@
 {
   "name": "dev-tools-mac",
-  "version": "1.0.4",
+  "version": "1.0.6",
   "description": "DevTools桌面应用",
   "main": "src/main/main.js",
   "scripts": {
@@ -27,6 +27,7 @@
     "crypto-js": "^4.2.0",
     "dayjs": "^1.11.14",
     "file-saver": "^2.0.5",
+    "gpt-tokenizer": "^3.0.1",
     "node-forge": "^1.3.1",
     "prettier": "^3.6.2",
     "qrcode": "^1.5.4",

@@ -185,10 +185,8 @@ watch(
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg,
-      var(--primary-color),
-      var(--primary-dark));
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: transparent;
+  position: relative;
 }
 
 .logo {
@@ -196,17 +194,37 @@ watch(
   display: inline-flex;
   align-items: center;
   gap: var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  transition: var(--transition-fast);
+  background: linear-gradient(135deg, 
+    rgba(var(--primary-rgb), 0.1), 
+    rgba(var(--primary-rgb), 0.05));
+  border: 1px solid rgba(var(--primary-rgb), 0.2);
+}
+
+.logo:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.2);
+  background: linear-gradient(135deg, 
+    rgba(var(--primary-rgb), 0.15), 
+    rgba(var(--primary-rgb), 0.08));
+  border-color: rgba(var(--primary-rgb), 0.3);
 }
 
 .logo-icon {
   font-size: 24px;
-  color: var(--text-inverse);
+  color: var(--primary-color);
+  text-shadow: 0 0 10px rgba(var(--primary-rgb), 0.3);
 }
 
 .logo-text {
   font-size: var(--text-lg);
   font-weight: 700;
-  color: var(--text-inverse);
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   letter-spacing: 0.5px;
 }
 
