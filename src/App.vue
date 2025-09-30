@@ -4,9 +4,14 @@
     <div class="sidebar" :class="{ collapsed: collapsed }">
       <!-- Logo区域 -->
       <div class="logo-section">
-        <div class="logo">
+        <div class="logo" @click="toggleSidebar">
           <tool-outlined class="logo-icon" />
           <span v-if="!collapsed" class="logo-text">DevTools</span>
+        </div>
+        <!-- 收缩按钮 -->
+        <div class="sidebar-toggle" @click="toggleSidebar" :title="collapsed ? '展开侧边栏' : '收缩侧边栏'">
+          <menu-unfold-outlined v-if="collapsed" class="toggle-icon" />
+          <menu-fold-outlined v-else class="toggle-icon" />
         </div>
       </div>
 
@@ -52,7 +57,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, h } from "vue";
+import { ref, computed, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import packageInfo from "../package.json";
 import { openExternalLink } from "@/utils/external-link";
@@ -64,7 +69,6 @@ import {
   CodeOutlined,
   TranslationOutlined,
   LockOutlined,
-  ClockCircleOutlined,
   PictureOutlined,
   CalendarOutlined,
   DollarOutlined,
@@ -176,70 +180,182 @@ watch(
 }
 
 .sidebar.collapsed {
-  width: 64px;
+  width: 82px;
 }
 
 .logo-section {
-  height: 56px;
+  height: 64px;
   border-bottom: 1px solid var(--border-light);
   display: flex;
   align-items: center;
   justify-content: center;
-  background: transparent;
+  background: linear-gradient(135deg, 
+    rgba(var(--primary-rgb), 0.02), 
+    rgba(var(--primary-rgb), 0.08));
   position: relative;
+  backdrop-filter: blur(10px);
+  transition: all var(--transition-normal);
 }
 
 .logo {
-  width: 130px;
   display: inline-flex;
   align-items: center;
   gap: var(--spacing-md);
-  padding: var(--spacing-sm) var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.logo::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(255, 255, 255, 0.2), 
+    transparent);
+  transition: left 0.6s ease;
+}
+
+.logo:hover {
+  transform: translateY(-2px) scale(1.02);
+}
+
+.logo:hover::before {
+  left: 100%;
+}
+
+.logo:active {
+  transform: translateY(-1px) scale(1.01);
+  transition: transform 0.1s ease;
+}
+
+.logo-icon {
+  font-size: 28px;
+  color: var(--primary-color);
+  text-shadow: 
+    0 0 20px rgba(var(--primary-rgb), 0.4),
+    0 2px 4px rgba(0, 0, 0, 0.2);
+  filter: drop-shadow(0 0 8px rgba(var(--primary-rgb), 0.3));
+  transition: all var(--transition-normal);
+  position: relative;
+  z-index: 2;
+}
+
+.logo:hover .logo-icon {
+  transform: rotate(5deg) scale(1.1);
+  text-shadow: 
+    0 0 25px rgba(var(--primary-rgb), 0.6),
+    0 2px 6px rgba(0, 0, 0, 0.3);
+  filter: drop-shadow(0 0 12px rgba(var(--primary-rgb), 0.5));
+}
+
+.logo-text {
+  font-size: var(--text-xl);
+  font-weight: 800;
+  background: linear-gradient(135deg, 
+    var(--primary-color), 
+    var(--primary-dark),
+    var(--primary-color));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  background-size: 200% 200%;
+  letter-spacing: 0.8px;
+  position: relative;
+  z-index: 2;
+  transition: all var(--transition-normal);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.logo:hover .logo-text {
+  background-position: 100% 0;
+  letter-spacing: 1px;
+  transform: translateX(2px);
+}
+
+/* 收缩状态下的logo样式 */
+.sidebar.collapsed .logo {
+  width: 48px;
+  padding: var(--spacing-sm);
+  justify-content: center;
+}
+
+.sidebar.collapsed .logo-icon {
+  font-size: 24px;
+}
+
+.sidebar.collapsed .logo:hover {
+  transform: translateY(-2px) scale(1.1);
+}
+
+.sidebar.collapsed .logo:hover .logo-icon {
+  transform: rotate(10deg) scale(1.2);
+}
+
+/* 侧边栏切换按钮 */
+.sidebar-toggle {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
   border-radius: var(--radius-md);
-  transition: var(--transition-fast);
   background: linear-gradient(135deg, 
     rgba(var(--primary-rgb), 0.1), 
     rgba(var(--primary-rgb), 0.05));
   border: 1px solid rgba(var(--primary-rgb), 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  backdrop-filter: blur(10px);
 }
 
-.logo:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.2);
+.sidebar-toggle:hover {
   background: linear-gradient(135deg, 
     rgba(var(--primary-rgb), 0.15), 
     rgba(var(--primary-rgb), 0.08));
   border-color: rgba(var(--primary-rgb), 0.3);
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 2px 8px rgba(var(--primary-rgb), 0.2);
 }
 
-.logo-icon {
-  font-size: 24px;
+.sidebar-toggle:active {
+  transform: translateY(-50%) scale(1.05);
+}
+
+.toggle-icon {
+  font-size: 14px;
   color: var(--primary-color);
-  text-shadow: 0 0 10px rgba(var(--primary-rgb), 0.3);
+  transition: all var(--transition-fast);
 }
 
-.logo-text {
-  font-size: var(--text-lg);
-  font-weight: 700;
-  background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  letter-spacing: 0.5px;
+.sidebar-toggle:hover .toggle-icon {
+  color: var(--primary-dark);
+  transform: scale(1.1);
 }
 
-.collapse-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text-inverse);
-  transition: var(--transition-fast);
+/* 收缩状态下隐藏切换按钮 */
+.sidebar.collapsed .sidebar-toggle {
+  opacity: 0;
+  pointer-events: none;
 }
 
-.collapse-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: var(--radius-sm);
+/* Logo区域悬停时显示切换按钮 */
+.logo-section:hover .sidebar-toggle {
+  opacity: 1;
+  pointer-events: auto;
 }
+
 
 .menu-section {
   flex: 1;
@@ -437,6 +553,59 @@ watch(
 
   .main-content {
     margin-left: 0;
+  }
+
+  .logo-section {
+    height: 60px;
+  }
+  
+  .logo {
+    width: 140px;
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+  
+  .logo-icon {
+    font-size: 24px;
+  }
+  
+  .logo-text {
+    font-size: var(--text-lg);
+  }
+  
+  .sidebar-toggle {
+    width: 28px;
+    height: 28px;
+    right: 6px;
+  }
+  
+  .toggle-icon {
+    font-size: 12px;
+  }
+}
+
+/* 高对比度模式优化 */
+@media (prefers-contrast: high) {
+  .logo {
+    border-width: 2px;
+  }
+  
+  .sidebar-toggle {
+    border-width: 2px;
+  }
+}
+
+/* 减少动画模式 */
+@media (prefers-reduced-motion: reduce) {
+  .logo,
+  .logo-icon,
+  .logo-text,
+  .sidebar-toggle,
+  .toggle-icon {
+    transition: none;
+  }
+  
+  .logo::before {
+    display: none;
   }
 }
 </style>

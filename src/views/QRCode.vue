@@ -89,7 +89,18 @@
               <!-- 预览图片 -->
               <div v-if="selectedImage" class="image-preview">
                 <img :src="selectedImage" alt="选择的图片" class="preview-image" />
-                <button class="btn-secondary" @click="clearImage">清除图片</button>
+                <div class="preview-actions">
+                  <button class="btn-primary" @click="scanQRCode" :disabled="isScanning">
+                    {{ isScanning ? '识别中...' : '重新识别' }}
+                  </button>
+                  <button class="btn-secondary" @click="clearImage" :disabled="isScanning">清除图片</button>
+                </div>
+              </div>
+
+              <!-- 识别状态 -->
+              <div v-if="isScanning" class="scanning-status">
+                <div class="scanning-icon">🔍</div>
+                <div class="scanning-text">正在识别二维码...</div>
               </div>
 
               <!-- 识别结果 -->
@@ -116,6 +127,7 @@
 import { ref } from 'vue'
 import { message } from 'ant-design-vue'
 import QRCode from 'qrcode'
+import jsQR from 'jsqr'
 
 const inputText = ref('')
 const qrSize = ref('256')
@@ -126,6 +138,7 @@ const fileInput = ref<HTMLInputElement>()
 const selectedImage = ref('')
 const scanResult = ref('')
 const scanError = ref('')
+const isScanning = ref(false)
 
 // 生成二维码
 const generateQR = async () => {
@@ -214,15 +227,63 @@ const processImageFile = (file: File) => {
   reader.readAsDataURL(file)
 }
 
-// 扫描二维码（简化版本）
-const scanQRCode = () => {
+// 将图片转换为Canvas ImageData
+const imageToImageData = (imageSrc: string): Promise<ImageData> => {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    img.onload = () => {
+      const canvas = document.createElement('canvas')
+      const ctx = canvas.getContext('2d')
+      if (!ctx) {
+        reject(new Error('无法获取Canvas上下文'))
+        return
+      }
+      
+      canvas.width = img.width
+      canvas.height = img.height
+      ctx.drawImage(img, 0, 0)
+      
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+      resolve(imageData)
+    }
+    img.onerror = () => reject(new Error('图片加载失败'))
+    img.src = imageSrc
+  })
+}
+
+// 扫描二维码
+const scanQRCode = async () => {
+  if (!selectedImage.value) {
+    scanError.value = '请先选择图片'
+    return
+  }
+
   scanResult.value = ''
   scanError.value = ''
-  
-  // 这里是简化的实现，实际应该使用专门的二维码识别库
-  // 由于二维码识别比较复杂，这里只做基本的提示
-  scanError.value = '二维码识别功能需要额外的库支持，当前为演示版本'
-  message.info('二维码识别功能开发中')
+  isScanning.value = true
+
+  try {
+    // 将图片转换为ImageData
+    const imageData = await imageToImageData(selectedImage.value)
+    
+    // 使用jsQR识别二维码，尝试多种反转方案以提高识别率
+    const code = jsQR(imageData.data, imageData.width, imageData.height, {
+      inversionAttempts: "attemptBoth",
+    })
+    
+    if (code) {
+      scanResult.value = code.data
+      message.success('二维码识别成功')
+    } else {
+      scanError.value = '未检测到二维码，请确保图片清晰且包含二维码'
+      message.warning('未检测到二维码')
+    }
+  } catch (error) {
+    scanError.value = '二维码识别失败: ' + (error as Error).message
+    message.error('二维码识别失败')
+  } finally {
+    isScanning.value = false
+  }
 }
 
 // 清除图片
@@ -230,6 +291,7 @@ const clearImage = () => {
   selectedImage.value = ''
   scanResult.value = ''
   scanError.value = ''
+  isScanning.value = false
   if (fileInput.value) {
     fileInput.value.value = ''
   }
@@ -354,6 +416,41 @@ const copyResult = async () => {
   max-height: 200px;
   border-radius: var(--radius-sm);
   margin-bottom: var(--spacing-md);
+}
+
+.preview-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  justify-content: center;
+}
+
+.scanning-status {
+  text-align: center;
+  padding: var(--spacing-lg);
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+}
+
+.scanning-icon {
+  font-size: 32px;
+  margin-bottom: var(--spacing-sm);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.scanning-text {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1);
+  }
 }
 
 .scan-result {
